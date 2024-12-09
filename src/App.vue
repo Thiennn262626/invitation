@@ -15,28 +15,46 @@
     </el-header>
 
     <!-- Body -->
-    <el-main class="main" @scroll="handleScroll">
+    <el-main class="main">
       <section ref="section1" class="section invitation">
-        <h2>Thư Mời</h2>
-        <p>Nội dung thư mời...</p>
+        <el-image
+          :src="require('@/assets/a.png')"
+          alt="Mô tả hình ảnh"
+          fit="cover"
+          style="width: 300px; height: 200px"
+          @error="handleImageError"
+        />
       </section>
       <section ref="section2" class="section guide">
-        <h2>Hướng Dẫn</h2>
-        <p>Nội dung hướng dẫn...</p>
+        <el-image
+          :src="require('@/assets/b.png')"
+          alt="Mô tả hình ảnh"
+          fit="cover"
+          style="width: 300px; height: 200px"
+          @error="handleImageError"
+        />
       </section>
       <section ref="section3" class="section thanks">
-        <h2>Cảm Ơn</h2>
-        <p>Nội dung cảm ơn...</p>
+        <el-image
+          :src="imagePath"
+          alt="Mô tả hình ảnh"
+          fit="cover"
+          style="width: 300px; height: 200px"
+          @error="handleImageError"
+        />
       </section>
     </el-main>
   </div>
 </template>
 
 <script>
+import ImageSrc from '@/assets/c.png'
+
 export default {
   data() {
     return {
       activeTab: '1', // Tab đang được chọn
+      imagePath: ImageSrc, // Đường dẫn hình ảnh mặc định
     }
   },
   methods: {
@@ -49,7 +67,7 @@ export default {
       }
       const target = sectionRefs[index]
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth' })
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
     },
     handleScroll() {
@@ -63,13 +81,19 @@ export default {
       // Xác định phần nội dung nào đang nằm trong vùng nhìn thấy
       const currentSection = sections.find((section) => {
         const rect = section.element.getBoundingClientRect()
-        return rect.top <= 100 && rect.bottom > 100 // Phần nội dung đang hiển thị
+        const viewportHeight =
+          window.innerHeight || document.documentElement.clientHeight
+        return rect.top >= 0 && rect.top <= viewportHeight / 2
       })
 
       // Cập nhật trạng thái tab nếu cần
       if (currentSection && currentSection.index !== this.activeTab) {
         this.activeTab = currentSection.index
       }
+    },
+    handleImageError(event) {
+      // Đặt hình ảnh mặc định nếu không tải được
+      event.target.src = require('@/assets/c.png')
     },
   },
   mounted() {
@@ -86,7 +110,7 @@ export default {
 </script>
 
 <style>
-/* CSS giữ nguyên như ban đầu */
+/* CSS */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -106,7 +130,9 @@ body {
 
 .menu {
   line-height: 60px;
+  display: flex;
   justify-content: center;
+  align-items: center;
 }
 
 .main {
@@ -115,7 +141,7 @@ body {
 }
 
 .section {
-  height: 100vh;
+  height: 95vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -123,6 +149,10 @@ body {
   text-align: center;
   border-bottom: 1px solid #ddd;
   margin-bottom: 20px;
+}
+
+.el-image {
+  height: 100%;
 }
 
 .invitation {
@@ -136,27 +166,26 @@ body {
 .thanks {
   background-color: #f0f5ff;
 }
-/* Toàn bộ thanh cuộn */
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px; /* Độ rộng của thanh cuộn dọc */
-  height: 8px; /* Độ cao của thanh cuộn ngang */
+  width: 8px;
+  height: 8px;
 }
 
-/* Phần track (nền của thanh cuộn) */
 ::-webkit-scrollbar-track {
-  background: #f0f0f0; /* Màu nền */
-  border-radius: 4px; /* Bo góc */
+  background: #f0f0f0;
+  border-radius: 4px;
 }
 
-/* Phần thumb (thanh kéo) */
 ::-webkit-scrollbar-thumb {
-  background: #409eff; /* Màu của thanh kéo */
-  border-radius: 4px; /* Bo góc */
-  border: 2px solid #f0f0f0; /* Khoảng cách giữa thumb và track */
+  background: #409eff;
+  border-radius: 4px;
+  border: 2px solid #f0f0f0;
+  transition: background 0.3s;
 }
 
-/* Hover vào thanh kéo */
 ::-webkit-scrollbar-thumb:hover {
-  background: #0073e6; /* Màu khi hover */
+  background: #005bbb;
 }
 </style>
