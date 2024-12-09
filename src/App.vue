@@ -16,6 +16,7 @@
 
     <!-- Body -->
     <el-main class="main">
+      <h2 class="invitation-title">Thư mời gửi đến {{ name }} !!!</h2>
       <section ref="section1" class="section invitation">
         <el-image
           :src="images.section1"
@@ -61,6 +62,7 @@ export default {
         section2: require("@/assets/b.png"),
         section3: DesktopImageC,
       },
+      name: "bạn",
     };
   },
   methods: {
@@ -74,6 +76,10 @@ export default {
           section3: MobileImageC,
         };
       }
+    },
+    getQueryParameter(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
     },
     handleMenuClick(index) {
       const sectionRefs = {
@@ -112,6 +118,11 @@ export default {
     this.detectDevice(); // Gọi khi ứng dụng được tải
     const mainElement = this.$el.querySelector(".main");
     mainElement.addEventListener("scroll", this.handleScroll);
+    // Lấy tham số name từ URL
+    const nameFromQuery = this.getQueryParameter("name");
+    if (nameFromQuery) {
+      this.name = decodeURIComponent(nameFromQuery); // Giải mã nếu cần
+    }
   },
   beforeUnmount() {
     const mainElement = this.$el.querySelector(".main");
@@ -149,7 +160,13 @@ body {
   flex: 1;
   overflow-y: auto;
 }
-
+.invitation-title {
+  text-align: center; /* Căn giữa theo chiều ngang */
+  color: #9f7736; /* Màu chữ */
+  font-size: 24px; /* Kích thước chữ */
+  font-weight: bold; /* Đậm chữ */
+  /* margin: 20px 0; Khoảng cách trên/dưới */
+}
 .section {
   height: 95vh;
   display: flex;
