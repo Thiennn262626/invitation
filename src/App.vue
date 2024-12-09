@@ -18,97 +18,107 @@
     <el-main class="main">
       <section ref="section1" class="section invitation">
         <el-image
-          :src="require('@/assets/a.png')"
-          alt="Mô tả hình ảnh"
+          :src="images.section1"
+          alt="Mô tả hình ảnh 1"
           fit="cover"
-          style="width: 300px; height: 200px"
+          class="full-image"
           @error="handleImageError"
         />
       </section>
       <section ref="section2" class="section guide">
         <el-image
-          :src="require('@/assets/b.png')"
-          alt="Mô tả hình ảnh"
+          :src="images.section2"
+          alt="Mô tả hình ảnh 2"
           fit="cover"
-          style="width: 300px; height: 200px"
+          class="full-image"
           @error="handleImageError"
         />
       </section>
       <section ref="section3" class="section thanks">
         <el-image
-          :src="imagePath"
-          alt="Mô tả hình ảnh"
+          :src="images.section3"
+          alt="Mô tả hình ảnh 3"
           fit="cover"
-          style="width: 300px; height: 200px"
+          class="full-image"
           @error="handleImageError"
         />
       </section>
     </el-main>
   </div>
 </template>
-
 <script>
-import ImageSrc from '@/assets/c.png'
+import DesktopImageC from "@/assets/c.png";
+import MobileImageA from "@/assets/a1.png";
+import MobileImageB from "@/assets/b1.png";
+import MobileImageC from "@/assets/c1.png";
 
 export default {
   data() {
     return {
-      activeTab: '1', // Tab đang được chọn
-      imagePath: ImageSrc, // Đường dẫn hình ảnh mặc định
-    }
+      activeTab: "1",
+      images: {
+        section1: require("@/assets/a.png"),
+        section2: require("@/assets/b.png"),
+        section3: DesktopImageC,
+      },
+    };
   },
   methods: {
+    detectDevice() {
+      const userAgent = navigator.userAgent;
+      // Nếu là thiết bị di động, thay đổi đường dẫn ảnh
+      if (/Mobi|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+        this.images = {
+          section1: MobileImageA,
+          section2: MobileImageB,
+          section3: MobileImageC,
+        };
+      }
+    },
     handleMenuClick(index) {
-      // Scroll đến phần nội dung tương ứng
       const sectionRefs = {
         1: this.$refs.section1,
         2: this.$refs.section2,
         3: this.$refs.section3,
-      }
-      const target = sectionRefs[index]
+      };
+      const target = sectionRefs[index];
       if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     },
     handleScroll() {
-      // Lấy vị trí hiện tại của các phần nội dung
       const sections = [
-        { index: '1', element: this.$refs.section1 },
-        { index: '2', element: this.$refs.section2 },
-        { index: '3', element: this.$refs.section3 },
-      ]
+        { index: "1", element: this.$refs.section1 },
+        { index: "2", element: this.$refs.section2 },
+        { index: "3", element: this.$refs.section3 },
+      ];
 
-      // Xác định phần nội dung nào đang nằm trong vùng nhìn thấy
       const currentSection = sections.find((section) => {
-        const rect = section.element.getBoundingClientRect()
+        const rect = section.element.getBoundingClientRect();
         const viewportHeight =
-          window.innerHeight || document.documentElement.clientHeight
-        return rect.top >= 0 && rect.top <= viewportHeight / 2
-      })
+          window.innerHeight || document.documentElement.clientHeight;
+        return rect.top >= 0 && rect.top <= viewportHeight / 2;
+      });
 
-      // Cập nhật trạng thái tab nếu cần
       if (currentSection && currentSection.index !== this.activeTab) {
-        this.activeTab = currentSection.index
+        this.activeTab = currentSection.index;
       }
     },
     handleImageError(event) {
-      // Đặt hình ảnh mặc định nếu không tải được
-      event.target.src = require('@/assets/c.png')
+      event.target.src = DesktopImageC;
     },
   },
   mounted() {
-    // Gắn sự kiện scroll vào phần tử chính
-    const mainElement = this.$el.querySelector('.main')
-    mainElement.addEventListener('scroll', this.handleScroll)
+    this.detectDevice(); // Gọi khi ứng dụng được tải
+    const mainElement = this.$el.querySelector(".main");
+    mainElement.addEventListener("scroll", this.handleScroll);
   },
   beforeUnmount() {
-    // Hủy sự kiện scroll khi component bị gỡ bỏ
-    const mainElement = this.$el.querySelector('.main')
-    mainElement.removeEventListener('scroll', this.handleScroll)
+    const mainElement = this.$el.querySelector(".main");
+    mainElement.removeEventListener("scroll", this.handleScroll);
   },
-}
+};
 </script>
-
 <style>
 /* CSS */
 body {
@@ -143,12 +153,12 @@ body {
 .section {
   height: 95vh;
   display: flex;
+  position: relative; /* Đảm bảo layout */
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   border-bottom: 1px solid #ddd;
-  margin-bottom: 20px;
 }
 
 .el-image {
